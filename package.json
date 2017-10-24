@@ -1,0 +1,33 @@
+{
+  "name": "oauth-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jasmine-node spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TroelsHJ/oauth-project.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TroelsHJ/oauth-project/issues"
+  },
+  "homepage": "https://github.com/TroelsHJ/oauth-project#readme",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.16.2",
+    "query-string": "^5.0.0",
+    "request": "^2.83.0"
+  },
+  "devDependencies": {
+    "@types/body-parser": "^1.16.5",
+    "@types/cookie-parser": "^1.4.1",
+    "@types/express": "^4.0.37",
+    "@types/query-string": "^5.0.0",
+    "@types/request": "^2.0.6"
+  }
+}
