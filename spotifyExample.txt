@@ -1,0 +1,199 @@
+//#region imports
+import * as Express from 'express';
+let app = Express();
+
+import * as BodyParser from 'body-parser';
+app.use(BodyParser.json());
+app.use(BodyParser.urlencoded({ extended: true }));
+
+import * as HTTP from 'http-status-codes';
+app.use("", (req, resp, next) => {
+    resp.header("Access-Control-Allow-Origin", "*");
+    resp.header("Access-Control-Allow-Methods", "POST, GET, DELETE, PUT");
+    resp.header("Access-Control-Allow-Headers", "Origin, X-Request-With, Content-Type, Accept");
+    next();
+});
+
+import { Resource } from 'hal';
+import * as querystring from 'query-string';
+import * as request from 'request';
+import * as cookieParser from 'cookie-parser';
+
+app.use(Express.static(__dirname + "/public")).use(cookieParser());
+//#endregion
+
+let quotes = [
+    { title: "Fight Club", cont: "The firt rule of fight clu is you do not talk about fight club!", rating: 5, date: new Date(1999, 1, 1).getFullYear() },
+    { title: "Silence of the Lambs", cont: "I'm having an old friend for dinner", rating: 1, date: new Date(1991, 1, 1).getFullYear() },
+    { title: "The Empire Strikes Back", cont: "I am your father", rating: 3, date: new Date(1980, 1, 1).getFullYear() },
+    { title: "Pulp Fiction", cont: "It's the one that says 'Bad Motherfucker'!", rating: 5, date: new Date(1994, 1, 1).getFullYear() },
+    { title: "Forrest Gump", cont: "Run Forrest, RUN!", rating: 2, date: new Date(1994, 1, 1).getFullYear() },
+    { title: "Good Morning, Vietnam", cont: "Good morning, Vietnam!", rating: 2, date: new Date(1987, 1, 1).getFullYear() },
+    { title: "The Force Awakens", cont: "Chewie, we're home!", rating: 4, date: new Date(2015, 1, 1).getFullYear() },
+    { title: "Jerry Maguire", cont: "You complete me", rating: 1, date: new Date(1996, 1, 1).getFullYear() }
+];
+
+let generateRandomString = function (length: number) {
+    let text = "";
+    let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    for (let i = 0; i < length; i++) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return text;
+};
+
+let myClient_id = "87e86bca327b4bdd83d62d0e6a5731ed";
+let myClient_secret = "d8040aca2d124f57ab3da61f90c5de1b";
+let myRedirect_uri = "http://localhost:1338/callback"
+let stateKey = "spotify_auth_state";
+
+app.get("/login", (req, resp) => {
+    let myScope = "user-read-email";
+    let myState = generateRandomString(16);
+
+    resp.cookie(stateKey, myState);
+
+
+    resp.redirect("https://accounts.spotify.com/authorize?" +
+        querystring.stringify({
+            response_type: "code",
+            client_id: myClient_id,
+            scope: myScope,
+            redirect_uri: myRedirect_uri,
+            state: myState
+        }));
+});
+
+app.get("/callback", (req, resp) => {
+    let code = req.query.code || null;
+    let state = req.query.state || null;
+    let storedState = req.cookies ? req.cookies[stateKey] : null;
+
+    if (state === null || state !== storedState) {
+        resp.redirect('/#' +
+            querystring.stringify({
+                error: 'state_mismatch'
+            }));
+    } else {
+        resp.clearCookie(stateKey);
+        let authOptions = {
+            url: 'https://accounts.spotify.com/api/token',
+            form: {
+                code: code,
+                redirect_uri: myRedirect_uri,
+                grant_type: 'authorization_code'
+            },
+            headers: {
+                'Authorization': 'Basic ' + (new Buffer(myClient_id + ':' + myClient_secret).toString('base64'))
+            },
+            json: true
+        };
+
+        request.post(authOptions, function (error, response, body) {
+            if (!error && response.statusCode === 200) {
+
+                let access_token = body.access_token,
+                    refresh_token = body.refresh_token;
+
+                let options = {
+                    url: 'https://api.spotify.com/v1/me',
+                    headers: { 'Authorization': 'Bearer ' + access_token },
+                    json: true
+                };
+
+                // use the access token to access the Spotify Web API
+                //request.get(options, function (error, response, body) {
+                    //console.log(body);
+                //});
+
+                // we can also pass the token to the browser to make requests from there
+                resp.redirect('/quote?' +
+                    querystring.stringify({
+                        access_token: access_token,
+                        refresh_token: refresh_token
+                    }));
+            } else {
+                resp.redirect('/#' +
+                    querystring.stringify({
+                        error: 'invalid_token'
+                    }));
+            }
+        });
+    }
+
+});
+
+app.get("/quote", (req, resp) => {
+    let access_token = req.query.access_token;
+
+    let options = {
+        url: 'https://api.spotify.com/v1/me',
+        headers: { 'Authorization': 'Bearer ' + access_token },
+        json: true
+    };
+
+    request.get(options, function (error, response, body) {
+        if (!body.error) {
+            let result = new Resource({}, "/quote");
+            result.link("quote: " + "addQuote", "http://localhost:1338/quote/create");
+            result.link("quote: " + "getQuotes", "http://localhost:1338/quote/read");
+            result.link("curie", { href: "/", templated: true, name: "quote" });
+            resp.status(HTTP.OK).json(result);
+        } else
+            resp.status(HTTP.UNAUTHORIZED).send("You are not logged in to Spotify");
+    });
+});
+
+app.get("/quote/read", (req, resp) => {
+    quotes.sort((a, b) => a.rating < b.rating ? 1 : -1);
+    let result = new Resource({}, "http://localhost:1338/quote/read");
+    for (let i = 0; i < quotes.length; i++) {
+        result.link(quotes[i].title, "http://localhost:1338/quote/" + i);
+    }
+    resp.status(HTTP.OK).json(result);
+});
+
+app.post("/quote/create", (req, resp) => {
+    let title = req.body.title;
+    let cont = req.body.content;
+    let rating = +req.body.rating;
+    let date = req.body.date;
+    quotes.push({ title, cont, rating, date });
+    resp.status(HTTP.CREATED).send();
+});
+
+app.delete("/quote/:id", (req, resp) => {
+    quotes.splice(req.params.id, 1);
+    resp.status(HTTP.NO_CONTENT).send();
+});
+
+app.get("/quote/:id", (req, resp) => {
+    let id = req.params.id;
+    let result = new Resource(quotes[id], "/quote/" + id)
+    result.link("quote: " + "Delete quote", "http://local:1338/quote/" + id);
+    result.link("quote: " + "Upvote quote", "http://localhost:1338/quote/" + id + "/upvote");
+    result.link("quote: " + "Downvote quote", "http://localhost:1338/quote/" + id + "/downvote");
+
+    result.link("curie", { href: "/", templated: true, name: "quote" });
+
+    resp.status(HTTP.OK).json(result);
+});
+
+app.put("/quote/:id/upvote", (req, resp) => {
+    quotes[req.params.id].rating++;
+    resp.status(HTTP.OK).send();
+});
+
+app.put("/quote/:id/downvote", (req, resp) => {
+    quotes[req.params.id].rating--;
+    resp.status(HTTP.OK).send();
+});
+
+app.options("*", (req, resp) => {
+
+});
+
+
+console.log("Started server on port 1338");
+app.listen(1338);
