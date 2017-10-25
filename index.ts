@@ -4,7 +4,7 @@ let app = Express();
 app.set('port', (process.env.PORT || 5000));
 
 app.get("/", (req, resp) => {
-    resp.send("Hey!");
+    resp.sendFile(__dirname + "/index.html");
 });
 
 app.listen(app.get('port'), () => {
@@ -33,23 +33,25 @@ let generateRandomString = function (length: number) {
 
 let myClient_id = "4b2dab3b-0bf0-4a0e-b253-d1c102da3210.apps.xena.biz";
 let myClient_secret = "JjFEh3aanXYrvAi6ZyuIOn7s";
-let myRedirect_uri = "https://hidden-brook-94877/callback"
-let stateKey = "spotify<<_auth_state";
+let myRedirect_uri = "https://hidden-brook-94877.herokuapps.com"
+//let stateKey = "spotify<<_auth_state";
 
 app.get("/login", (req, resp) => {
-    let myScope = "api";
-    let myState = generateRandomString(16);
+    let myScope = "openid testapi";
+    let myNonce = "" + generateRandomString(32);
+    //let myState = generateRandomString(16);
 
-    resp.cookie(stateKey, myState);
+    //resp.cookie(stateKey, myState);
 
 
     resp.redirect("https://login.xena.biz/connect/authorize?" +
     querystring.stringify({
-        response_type: "code",
+        response_type: "code id_token",
         client_id: myClient_id,
-        scope: myScope,
         redirect_uri: myRedirect_uri,
-        state: myState
+        respons_mode: "form_post",
+        scope: myScope,
+        nonce: myNonce,
     }));
 });
 
@@ -69,7 +71,7 @@ app.get("/callback", (req, resp) => {
             url: 'https://login.xena.biz/connect/authorize?',
             form: {
                 code: code,
-                redirect_uri: myRedirect_uri,
+                redirect_uri: myRedirect_uri
                 grant_type: 'authorization_code'
             },
             headers: {

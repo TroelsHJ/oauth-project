@@ -4,7 +4,7 @@ var Express = require("express");
 var app = Express();
 app.set('port', (process.env.PORT || 5000));
 app.get("/", function (req, resp) {
-    resp.send("Hey!");
+    resp.sendFile(__dirname + "/index.html");
 });
 app.listen(app.get('port'), function () {
     console.log("Server is running on port ", app.get('port'));
@@ -26,19 +26,21 @@ var generateRandomString = function (length) {
 };
 var myClient_id = "4b2dab3b-0bf0-4a0e-b253-d1c102da3210.apps.xena.biz";
 var myClient_secret = "JjFEh3aanXYrvAi6ZyuIOn7s";
-var myRedirect_uri = "https://hidden-brook-94877/callback";
-var stateKey = "spotify<<_auth_state";
+var myRedirect_uri = "https://hidden-brook-94877.herokuapps.com";
+//let stateKey = "spotify<<_auth_state";
 app.get("/login", function (req, resp) {
-    var myScope = "api";
-    var myState = generateRandomString(16);
-    resp.cookie(stateKey, myState);
+    var myScope = "openid testapi";
+    var myNonce = "" + generateRandomString(32);
+    //let myState = generateRandomString(16);
+    //resp.cookie(stateKey, myState);
     resp.redirect("https://login.xena.biz/connect/authorize?" +
         querystring.stringify({
-            response_type: "code",
+            response_type: "code id_token",
             client_id: myClient_id,
-            scope: myScope,
             redirect_uri: myRedirect_uri,
-            state: myState
+            respons_mode: "form_post",
+            scope: myScope,
+            nonce: myNonce,
         }));
 });
 app.get("/callback", function (req, resp) {
