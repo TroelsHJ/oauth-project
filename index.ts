@@ -30,7 +30,7 @@ function generateRandomString(length: any) {
 
 let secretKey = FileHandler.readFileSync("./secretKey.txt", "utf8");
 let myClient_id = "4b2dab3b-0bf0-4a0e-b253-d1c102da3210.apps.xena.biz";
-let myClient_secret = "JjFEh3aanXYrvAi6ZyuIOn7s";
+let myClient_secret = secretKey;
 let myRedirect_uri = "https://hidden-brook-94877.herokuapps.com/callback"
 
 app.get('/login', function (req, res) {
