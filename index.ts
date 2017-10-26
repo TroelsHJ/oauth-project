@@ -8,7 +8,7 @@ app.use(BodyParser.urlencoded({ extended: true}));
 import * as querystring from 'query-string';
 import * as request from 'request';
 import * as FileHandler from 'fs';
-let secretKey = FileHandler.readFileSync("./secretKey.txt", "utf8");
+let secretKey = FileHandler.readFileSync("./secretKey.txt");
 //#endregion
 
 //#region app....

@@ -9,7 +9,7 @@ app.use(BodyParser.urlencoded({ extended: true }));
 var querystring = require("query-string");
 var request = require("request");
 var FileHandler = require("fs");
-var secretKey = FileHandler.readFileSync("./secretKey.txt", "utf8");
+var secretKey = FileHandler.readFileSync("./secretKey.txt");
 //#endregion
 //#region app....
 app.set('port', (process.env.PORT || 5000));
