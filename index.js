@@ -1,7 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+//#region imports
 var Express = require("express");
 var app = Express();
+var BodyParser = require("body-parser");
+app.use(BodyParser.json());
+app.use(BodyParser.urlencoded({ extended: true }));
+var querystring = require("query-string");
+var request = require("request");
+var FileHandler = require("fs");
+var secretKey = FileHandler.readFileSync("./secretKey.txt", "utf8");
+//#endregion
+//#region app....
 app.set('port', (process.env.PORT || 5000));
 app.get("/", function (req, resp) {
     resp.sendFile(__dirname + "/index.html");
@@ -9,13 +19,7 @@ app.get("/", function (req, resp) {
 app.listen(app.get('port'), function () {
     console.log("Server is running on port ", app.get('port'));
 });
-var BodyParser = require("body-parser");
-app.use(BodyParser.json());
-app.use(BodyParser.urlencoded({ extended: true }));
-var querystring = require("query-string");
-var request = require("request");
-//import * as cookieParser from 'cookie-parser';
-//app.use (Express.static(__dirname + "/public")).use(cookieParser());
+//#endregion ´
 var generateRandomString = function (length) {
     var text = "";
     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -25,7 +29,7 @@ var generateRandomString = function (length) {
     return text;
 };
 var myClient_id = "4b2dab3b-0bf0-4a0e-b253-d1c102da3210.apps.xena.biz";
-var myClient_secret = "JjFEh3aanXYrvAi6ZyuIOn7s";
+var myClient_secret = secretKey;
 var myRedirect_uri = "https://hidden-brook-94877.herokuapps.com";
 //let stateKey = "spotify<<_auth_state";
 app.get("/login", function (req, resp) {

@@ -1,6 +1,17 @@
+//#region imports
 import * as Express from 'express';
 let app = Express();
+import * as BodyParser from 'body-parser';
+app.use(BodyParser.json());
+app.use(BodyParser.urlencoded({ extended: true}));
 
+import * as querystring from 'query-string';
+import * as request from 'request';
+import * as FileHandler from 'fs';
+let secretKey = FileHandler.readFileSync("./secretKey.txt", "utf8");
+//#endregion
+
+//#region app....
 app.set('port', (process.env.PORT || 5000));
 
 app.get("/", (req, resp) => {
@@ -10,16 +21,7 @@ app.get("/", (req, resp) => {
 app.listen(app.get('port'), () => {
     console.log("Server is running on port ", app.get('port'));
 });
-
-import * as BodyParser from 'body-parser';
-app.use(BodyParser.json());
-app.use(BodyParser.urlencoded({ extended: true}));
-
-import * as querystring from 'query-string';
-import * as request from 'request';
-//import * as cookieParser from 'cookie-parser';
-
-//app.use (Express.static(__dirname + "/public")).use(cookieParser());
+//#endregion ´
 
 let generateRandomString = function (length: number) {
     let text = "";
@@ -32,7 +34,7 @@ let generateRandomString = function (length: number) {
 };
 
 let myClient_id = "4b2dab3b-0bf0-4a0e-b253-d1c102da3210.apps.xena.biz";
-let myClient_secret = "JjFEh3aanXYrvAi6ZyuIOn7s";
+let myClient_secret = secretKey;
 let myRedirect_uri = "https://hidden-brook-94877.herokuapps.com"
 //let stateKey = "spotify<<_auth_state";
 
