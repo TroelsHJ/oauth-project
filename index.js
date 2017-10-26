@@ -6,6 +6,8 @@ var app = Express();
 var querystring = require("query-string");
 var request = require("request");
 var FileHandler = require("fs");
+var HTTP = require("http-status-codes");
+var hal_1 = require("hal");
 //#endregion
 //#region server_setup
 app.set('port', (process.env.PORT || 5000));
@@ -64,7 +66,7 @@ app.get("/callback", function (req, resp) {
                 headers: { 'Authorization': 'Bearer ' + access_token },
                 json: true
             };
-            resp.redirect('/#' +
+            resp.redirect('/fun' +
                 querystring.stringify({
                     access_token: access_token,
                     refresh_token: refresh_token
@@ -76,5 +78,23 @@ app.get("/callback", function (req, resp) {
                     error: 'invalid_token'
                 }));
         }
+    });
+});
+app.get("/fun", function (req, resp) {
+    var access_token = req.query.access_token;
+    var options = {
+        url: 'https://my.xena.biz/',
+        headers: { 'Authorization': 'Bearer ' + access_token },
+        json: true
+    };
+    request.get(options, function (error, response, body) {
+        if (!body.error) {
+            var result = new hal_1.Resource({}, "/quote");
+            result.link("quote: " + "addQuote", "https://eb.dk");
+            result.link("curie", { href: "/", templated: true, name: "quote" });
+            resp.status(HTTP.OK).json(result);
+        }
+        else
+            resp.status(HTTP.UNAUTHORIZED).send("You are not logged in to XENA");
     });
 });

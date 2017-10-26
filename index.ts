@@ -4,6 +4,8 @@ let app = Express();
 import * as querystring from 'query-string';
 import * as request from 'request';
 import * as FileHandler from 'fs';
+import * as HTTP from 'http-status-codes';
+import { Resource } from 'hal';
 //#endregion
 
 //#region server_setup
@@ -76,7 +78,7 @@ app.get("/callback", function (req, resp) {
                 json: true
             };
 
-            resp.redirect('/#' +
+            resp.redirect('/fun' +
                 querystring.stringify({
                     access_token: access_token,
                     refresh_token: refresh_token
@@ -88,6 +90,28 @@ app.get("/callback", function (req, resp) {
                 }));
         }
     });
+
+});
+
+app.get("/fun", (req, resp) => {
+    let access_token = req.query.access_token;
+
+    let options = {
+        url: 'https://my.xena.biz/',
+        headers: { 'Authorization': 'Bearer ' + access_token },
+        json: true
+    };
+
+    request.get(options, function (error, response, body) {
+        if (!body.error) {
+            let result = new Resource({}, "/quote");
+            result.link("quote: " + "addQuote", "https://eb.dk");
+            result.link("curie", { href: "/", templated: true, name: "quote" });
+            resp.status(HTTP.OK).json(result);
+        } else
+            resp.status(HTTP.UNAUTHORIZED).send("You are not logged in to XENA");
+    });
+
 
 });
 
