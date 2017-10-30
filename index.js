@@ -6,8 +6,6 @@ var app = Express();
 var querystring = require("query-string");
 var request = require("request");
 var FileHandler = require("fs");
-var HTTP = require("http-status-codes");
-var hal_1 = require("hal");
 //#endregion
 //#region server_setup
 app.set('port', (process.env.PORT || 5000));
@@ -30,7 +28,7 @@ function generateRandomString(length) {
 var secretKey = FileHandler.readFileSync("./secretKey.txt", "utf8");
 var myClient_id = "4b2dab3b-0bf0-4a0e-b253-d1c102da3210.apps.xena.biz";
 var myClient_secret = secretKey;
-var myRedirect_uri = "https://hidden-brook-94877.herokuapps.com/callback";
+var myRedirect_uri = "https://hidden-brook-94877.herokuapp.com/callback";
 app.get('/login', function (req, res) {
     var nonce = "" + generateRandomString(32);
     var scope = "openid profile";
@@ -62,11 +60,11 @@ app.get("/callback", function (req, resp) {
         if (!error && response.statusCode === 200) {
             var access_token = body.access_token, refresh_token = body.refresh_token;
             var options = {
-                url: 'https://eb.dk',
+                url: 'https://my.xena.biz/',
                 headers: { 'Authorization': 'Bearer ' + access_token },
                 json: true
             };
-            resp.redirect('/fun' +
+            resp.redirect('http://budget-manager.azurewebsites.net/' +
                 querystring.stringify({
                     access_token: access_token,
                     refresh_token: refresh_token
@@ -80,21 +78,26 @@ app.get("/callback", function (req, resp) {
         }
     });
 });
-app.get("/fun", function (req, resp) {
-    var access_token = req.query.access_token;
-    var options = {
+/*
+app.get("/fun", (req, resp) => {
+    let access_token = req.query.access_token;
+
+    let options = {
         url: 'https://my.xena.biz/',
         headers: { 'Authorization': 'Bearer ' + access_token },
         json: true
     };
+
     request.get(options, function (error, response, body) {
         if (!body.error) {
-            var result = new hal_1.Resource({}, "/quote");
+            let result = new Resource({}, "/quote");
             result.link("quote: " + "addQuote", "https://eb.dk");
             result.link("curie", { href: "/", templated: true, name: "quote" });
             resp.status(HTTP.OK).json(result);
-        }
-        else
+        } else
             resp.status(HTTP.UNAUTHORIZED).send("You are not logged in to XENA");
     });
+
+
 });
+*/

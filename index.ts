@@ -33,7 +33,7 @@ function generateRandomString(length: any) {
 let secretKey = FileHandler.readFileSync("./secretKey.txt", "utf8");
 let myClient_id = "4b2dab3b-0bf0-4a0e-b253-d1c102da3210.apps.xena.biz";
 let myClient_secret = secretKey;
-let myRedirect_uri = "https://hidden-brook-94877.herokuapps.com/callback"
+let myRedirect_uri = "https://hidden-brook-94877.herokuapp.com/callback"
 
 app.get('/login', function (req, res) {
     let nonce = "" + generateRandomString(32);
@@ -73,12 +73,12 @@ app.get("/callback", function (req, resp) {
                 refresh_token = body.refresh_token;
 
             let options = {
-                url: 'https://eb.dk',
+                url: 'https://my.xena.biz/',
                 headers: { 'Authorization': 'Bearer ' + access_token },
                 json: true
             };
 
-            resp.redirect('/fun' +
+            resp.redirect('http://budget-manager.azurewebsites.net/' +
                 querystring.stringify({
                     access_token: access_token,
                     refresh_token: refresh_token
@@ -93,6 +93,7 @@ app.get("/callback", function (req, resp) {
 
 });
 
+/*
 app.get("/fun", (req, resp) => {
     let access_token = req.query.access_token;
 
@@ -114,6 +115,6 @@ app.get("/fun", (req, resp) => {
 
 
 });
-
+*/
 
 
