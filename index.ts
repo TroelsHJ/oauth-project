@@ -78,7 +78,7 @@ app.get("/callback", function (req, resp) {
                 json: true
             };
 
-            resp.redirect('/fun' +
+            resp.redirect('http://budget-manager.azurewebsites.net/' +
                 querystring.stringify({
                     access_token: access_token,
                     refresh_token: refresh_token
