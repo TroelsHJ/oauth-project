@@ -30,7 +30,7 @@ function generateRandomString(length) {
 var secretKey = FileHandler.readFileSync("./secretKey.txt", "utf8");
 var myClient_id = "4b2dab3b-0bf0-4a0e-b253-d1c102da3210.apps.xena.biz";
 var myClient_secret = secretKey;
-var myRedirect_uri = "http://budget-manager.azurewebsites.net/";
+var myRedirect_uri = "https://hidden-brook-94877.herokuapps.com/callback";
 app.get('/login', function (req, res) {
     var nonce = "" + generateRandomString(32);
     var scope = "openid profile";
