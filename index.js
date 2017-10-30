@@ -62,7 +62,7 @@ app.get("/callback", function (req, resp) {
         if (!error && response.statusCode === 200) {
             var access_token = body.access_token, refresh_token = body.refresh_token;
             var options = {
-                url: 'https://my.xena.biz/',
+                url: 'https://eb.dk',
                 headers: { 'Authorization': 'Bearer ' + access_token },
                 json: true
             };

@@ -73,7 +73,7 @@ app.get("/callback", function (req, resp) {
                 refresh_token = body.refresh_token;
 
             let options = {
-                url: 'https://my.xena.biz/',
+                url: 'https://eb.dk',
                 headers: { 'Authorization': 'Bearer ' + access_token },
                 json: true
             };
