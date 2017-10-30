@@ -66,7 +66,7 @@ app.get("/callback", function (req, resp) {
         json: true
     };
 
-    request.get(authOptions, function (error, response, body) {
+    request.post(authOptions, function (error, response, body) {
         if (!error && response.statusCode === 200) {
 
             let access_token = body.access_token,
