@@ -6,8 +6,9 @@ import * as request from 'request';
 import * as FileHandler from 'fs';
 import * as HTTP from 'http-status-codes';
 import { Resource } from 'hal';
-import * as bodyparser from 'body-parser';
-
+import * as BodyParser from 'body-parser';
+app.use(BodyParser.json());
+app.use(BodyParser.urlencoded({ extended: true }));
 //#endregion
 
 //#region server_setup
@@ -16,6 +17,7 @@ app.listen(app.get('port'), () => {
     console.log("Server is running on port", app.get('port'));
 });
 //#endregion ´
+
 
 app.get("/", (req, resp) => {
     resp.sendFile(__dirname + "/index.html");

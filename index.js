@@ -6,6 +6,9 @@ var app = Express();
 var querystring = require("query-string");
 var request = require("request");
 var FileHandler = require("fs");
+var BodyParser = require("body-parser");
+app.use(BodyParser.json());
+app.use(BodyParser.urlencoded({ extended: true }));
 //#endregion
 //#region server_setup
 app.set('port', (process.env.PORT || 5000));
