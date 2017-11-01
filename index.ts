@@ -37,7 +37,6 @@ let myRedirect_uri = "https://hidden-brook-94877.herokuapp.com/callback"
 
 app.get('/login', function (req, res) {
     let nonce = "" + generateRandomString(32);
-    let scope = "openid profile";
     res.redirect('https://login.xena.biz/connect/authorize?' +
         querystring.stringify({
             response_type: 'code id_token',
@@ -45,7 +44,8 @@ app.get('/login', function (req, res) {
             redirect_uri: myRedirect_uri,
             response_mode: "form_post",
             scope: 'openid testapi',
-            nonce: nonce
+            nonce: nonce, 
+            json: true
         }));
 });
 
