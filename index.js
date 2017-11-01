@@ -48,8 +48,11 @@ app.post("/callback", function (req, resp) {
         url: 'https://login.xena.biz/connect/token?',
         form: {
             code: code,
+            client_id: myClient_id,
+            client_secret: myClient_secret,
             redirect_uri: myRedirect_uri,
-            grant_type: 'authorization_code'
+            grant_type: 'authorization_code',
+            response_mode: "form_post"
         },
         headers: {
             'Authorization': 'Basic ' + (new Buffer(myClient_id + ':' + myClient_secret).toString('base64'))
