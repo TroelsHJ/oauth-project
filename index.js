@@ -89,7 +89,7 @@ app.post("/callback", function (req, resp) {
 app.get("/fun", function (req, resp) {
     var access_token = req.query.access_token;
     var options = {
-        url: 'https://my.xena.biz/Api/User/ClientAuthorization',
+        url: 'https://my.xena.biz/Api/Fiscal/98443/XenaApp',
         headers: { 'Authorization': 'Bearer ' + access_token },
         json: true
     };

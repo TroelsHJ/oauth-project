@@ -107,7 +107,7 @@ app.get("/fun", (req, resp) => {
     let access_token = req.query.access_token;
 
     let options = {
-        url: 'https://my.xena.biz/Api/User/ClientAuthorization',
+        url: 'https://my.xena.biz/Api/Fiscal/98443/XenaApp',
         headers: { 'Authorization': 'Bearer ' + access_token },
         json: true
     };
