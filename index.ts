@@ -85,7 +85,7 @@ app.post("/callback", function (req, resp) {
                 json: true
             };
 
-            resp.redirect('eb.dk' +
+            resp.redirect('budget-manager.azurewebsites.net?' +
                 querystring.stringify({
                     access_token: access_token,
                     refresh_token: refresh_token
