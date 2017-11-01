@@ -78,6 +78,7 @@ app.post("/callback", function (req, resp) {
                 querystring.stringify({
                     error: 'invalid_token'
                 }));
+            console.log(error);
         }
     });
 });
