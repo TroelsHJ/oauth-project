@@ -6,6 +6,8 @@ import * as request from 'request';
 import * as FileHandler from 'fs';
 import * as HTTP from 'http-status-codes';
 import { Resource } from 'hal';
+import * as bodyparser from 'body-parser';
+
 //#endregion
 
 //#region server_setup
@@ -44,14 +46,14 @@ app.get('/login', function (req, res) {
             redirect_uri: myRedirect_uri,
             response_mode: "form_post",
             scope: 'openid testapi',
-            nonce: nonce, 
+            nonce: nonce,
             json: true
         }));
 });
 
 app.post("/callback", function (req, resp) {
 
-    let code = req.query.code || null;
+    let code = req.body.code || null;
 
     let authOptions = {
         url: 'https://login.xena.biz/connect/token?',
@@ -91,8 +93,8 @@ app.post("/callback", function (req, resp) {
                 querystring.stringify({
                     error: 'invalid_token'
                 }));
-                console.log(error);
-                
+
+            console.log(error);
         }
     });
 

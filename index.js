@@ -43,7 +43,7 @@ app.get('/login', function (req, res) {
         }));
 });
 app.post("/callback", function (req, resp) {
-    var code = req.query.code || null;
+    var code = req.body.code || null;
     var authOptions = {
         url: 'https://login.xena.biz/connect/token?',
         form: {
