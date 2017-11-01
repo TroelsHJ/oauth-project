@@ -42,7 +42,7 @@ app.get('/login', function (req, res) {
             nonce: nonce
         }));
 });
-app.get("/callback", function (req, resp) {
+app.post("/callback", function (req, resp) {
     var code = req.query.code || null;
     var authOptions = {
         url: 'https://login.xena.biz/connect/token?',
@@ -56,7 +56,7 @@ app.get("/callback", function (req, resp) {
         },
         json: true
     };
-    request.get(authOptions, function (error, response, body) {
+    request.post(authOptions, function (error, response, body) {
         if (!error && response.statusCode === 200) {
             var access_token = body.access_token, refresh_token = body.refresh_token;
             var options = {
