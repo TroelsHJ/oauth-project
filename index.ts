@@ -102,28 +102,25 @@ app.post("/callback", function (req, resp) {
 
 });
 
-/*
+
 app.get("/fun", (req, resp) => {
     let access_token = req.query.access_token;
 
     let options = {
-        url: 'https://my.xena.biz/',
+        url: 'https://my.xena.biz/Api/User/ClientAuthorization',
         headers: { 'Authorization': 'Bearer ' + access_token },
         json: true
     };
 
-    request.get(options, function (error, response, body) {
-        if (!body.error) {
-            let result = new Resource({}, "/quote");
-            result.link("quote: " + "addQuote", "https://eb.dk");
-            result.link("curie", { href: "/", templated: true, name: "quote" });
-            resp.status(HTTP.OK).json(result);
+    request.get(options, function (error, response) {
+        if (!error && response.statusCode === 200) {
+            resp.status(HTTP.OK).json(response);
         } else
             resp.status(HTTP.UNAUTHORIZED).send("You are not logged in to XENA");
     });
 
 
 });
-*/
+
 
 

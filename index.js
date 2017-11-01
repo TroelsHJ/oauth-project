@@ -6,6 +6,7 @@ var app = Express();
 var querystring = require("query-string");
 var request = require("request");
 var FileHandler = require("fs");
+var HTTP = require("http-status-codes");
 var BodyParser = require("body-parser");
 app.use(BodyParser.json());
 app.use(BodyParser.urlencoded({ extended: true }));
@@ -85,26 +86,18 @@ app.post("/callback", function (req, resp) {
         }
     });
 });
-/*
-app.get("/fun", (req, resp) => {
-    let access_token = req.query.access_token;
-
-    let options = {
-        url: 'https://my.xena.biz/',
+app.get("/fun", function (req, resp) {
+    var access_token = req.query.access_token;
+    var options = {
+        url: 'https://my.xena.biz/Api/User/ClientAuthorization',
         headers: { 'Authorization': 'Bearer ' + access_token },
         json: true
     };
-
-    request.get(options, function (error, response, body) {
-        if (!body.error) {
-            let result = new Resource({}, "/quote");
-            result.link("quote: " + "addQuote", "https://eb.dk");
-            result.link("curie", { href: "/", templated: true, name: "quote" });
-            resp.status(HTTP.OK).json(result);
-        } else
+    request.get(options, function (error, response) {
+        if (!error && response.statusCode === 200) {
+            resp.status(HTTP.OK).json(response);
+        }
+        else
             resp.status(HTTP.UNAUTHORIZED).send("You are not logged in to XENA");
     });
-
-
 });
-*/
